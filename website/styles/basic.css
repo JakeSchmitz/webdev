@@ -1,0 +1,28 @@
+/* Body should have no margin to allow fullscreen background image */
+body {
+	margin: 0px;
+}
+
+.shell {
+	background-color: #141103;
+}
+
+/* imageContainer should go full width to allow fullscreen image */
+.imageContainer {
+	width: 100%; 
+	height: 100%
+}
+
+/* fullImg should go full width to allow fullscreen image */
+.fullImg {
+	width: 100%; 
+	height: 100%
+}
+
+/* Add some margins for the website content */
+.textContainer {
+	margin-left: 100px;
+	margin-right: 100px;
+	padding: 20px;
+	background-color: #ffffff;
+}
