@@ -1,27 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html style="margin: 0px; padding: 0px">
 	<head>
 		<title>Jacob Schmitz Homework</title>
 		<link rel="icon" href="http://holub.com/favicon.ico">
 		<link rel="shortcuticon" href="http://holub.com/favicon.ico">
 		<link rel="stylesheet" type="text/css" href="styles/basic.css">
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script type="text/javascript" 
+    		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 		<meta charset="UTF-8">
-		<meta name="Jacob Schmitz Site" content="Portfolio website for Jacob Schmitz.">
+		<meta name="description" content="Portfolio website for Jacob Schmitz.">
 		<meta keywords="keywords" content="Jake, Jacob, Baicker, Schmitz, Portfolio">
 		<meta name="author" content="Jacob Schmitz">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	<body>
 		<div class="shell">
-			<div class="imageContainer">
-				<img src="nature-placeholder.jpg" class="fullImg"></img>
+			<div class="upperContent">
+				<div class="upperLeft">
+					<img src="images/headshot.jpg" class="headshot">
+				</div>
+				<div class="upperRight">
+					<div class="contactContainer">
+						<h1>Contact Jake!</h1>
+						<p>Email: <a href="mailto:jake.schmitz101@gmail.com" target="_top">jake.schmitz101@gmail.com</a></p>
+						<p>Github: <a href="https://github.com/JakeSchmitz" target="_top">github.com/JakeSchmitz</a></p>
+						<p>Mobile: (973)-809-8475</p>
+						<p>Address: 12 Highland Ave<br>Maplewood, NJ, 07040</p>
+					</div>
+				</div>
+				<div class="resumeContainer">
+				    <h1>About Jake!</h1>
+				    <h3>Education</h3>
+				    <ul>
+				    	<li>Tufts University School of Engineering: BS Engineering (May 2015)</li>
+				    	<li>Columbia High School - Maplewood, NJ (June 2011)</li>
+				    </ul>
+				    <h3>Work</h3>
+				    <ul>
+				    	<li>Vantiq Inc. - Software Engineer (April 2016 - Present)</li>
+				    	<li>Cloudera - Software Engineer (July 2015 - March 2016)</li>
+				    	<li>Tufts University CS Department - Lab Instructor (September 2014 - November 2015)</li>
+				    </ul>
+			    </div>
 			</div>
-			<div class="textContainer">
-			    <h1>My website!</h1>
-			    <p>This is a real website</p>
-		    </div>
+			<div class="lowerContent" style="text-align: center">
+				<h1 style="margin: 20px">Send Jake a Message</h1>
+				<div class="contactForm" style="text-align: center; color: black!">
+					<form  class="contactForm"
+						action="http://holub.com/echo.php" metho="post">
+						<textarea style="color: black; width: 400px; text-align: left" rows="4" placeholder="Enter a message"></textarea>
+						<br><br>
+						<input style="color: black; width: 200px" type="text" list="data-list" placeholder="Request Type">
+						<datalist id="data-list">
+							<option value="Advice"></option>
+							<option value="Interview"></option>
+							<option value="Contracting"></option>
+							<option value="Other"></option>
+						</datalist>
+						<br>
+						<h3>Your Contact Info</h3>
+						<input style="color: black; width: 200px" type="tel" id="tel-input"
+								required placeholder="Phone Number">
+						<br>
+						<input style="color: black; width: 200px" type="email" id="email-input"
+								required multiple placeholder="Email Address">
+						<br><br>
+						<input style="color: black; width: 200px" type="submit" value="Submit">
+					</form>
+				</div>
+
+			</div>
 		</div>
 	</body>
 </html>
