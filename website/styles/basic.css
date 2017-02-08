@@ -21,6 +21,10 @@ html, body {
 	float: left;
 }
 
+.headshot {
+	width: 560px;
+}
+
 .upperRight {
 	width: 60%;
 	float: left;
@@ -36,11 +40,11 @@ html, body {
 
 li {
 	margin-top: 0.5em;
-	font-size: 1.5em;
+	font-size: 1.1em;
 }
 
 p {
-	font-size: 1.5em;
+	font-size: 1.1em;
 }
 
 .lowerContent {
