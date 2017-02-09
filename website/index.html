@@ -49,21 +49,21 @@
 				<h1 style="margin: 20px">Send Jake a Message</h1>
 				<div class="contactForm" style="text-align: center; color: black!">
 					<form class="contactForm" action="http://holub.com/echo.php" method="post">
-						<textarea style="color: black; width: 100%; text-align: left" rows="4" placeholder="Enter a message"></textarea>
+						<textarea style="color: black; width: 100%; text-align: left" rows="4" name="message" placeholder="Enter a message"></textarea>
 						<br><br>
-						<!--<input style="color: black; width: 100%" type="text" list="data-list" placeholder="Request Type">
+						<input style="color: black; width: 100%" type="text" list="data-list" name="requestType" placeholder="Request Type">
 						<datalist id="data-list">
 							<option value="Advice"></option>
 							<option value="Interview"></option>
 							<option value="Contracting"></option>
 							<option value="Other"></option>
-						</datalist>-->
+						</datalist>
 						<br>
 						<h3>Your Contact Info</h3>
-						<input style="color: black; width: 100%" type="tel" id="tel-input"
+						<input style="color: black; width: 100%" name="phone" type="tel" id="tel-input"
 								required placeholder="Phone Number">
 						<br>
-						<input style="color: black; width: 100%" type="email" id="email-input"
+						<input style="color: black; width: 100%" name="email" type="email" id="email-input"
 								required multiple placeholder="Email Address">
 						<br><br>
 						<input style="color: black; width: 100%" type="submit" value="Submit">
