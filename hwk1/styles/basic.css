@@ -1,61 +1,61 @@
 /* Body should have no margin to allow fullscreen background image */
 html, body {
-	margin: 0px;
+    margin: 0px;
 }
 
 .shell {
-	width: 100%;
-	background-color: #141103;
-	color: #fff;
-	float:left;
+    width: 100%;
+    background-color: #141103;
+    color: #fff;
+    float:left;
 }
 
 .upperContent {
-	width: 100%;
-	margin: 0px;
-	float: left;
+    width: 100%;
+    margin: 0px;
+    float: left;
 }
 
 .upperLeft {
-	height: 100%;
-	float: left;
+    height: 100%;
+    float: left;
 }
 
 .headshot {
-	width: 560px;
+    width: 560px;
 }
 
 .upperRight {
-	width: 60%;
-	float: left;
-	padding-left: 50px;
-	padding-top: 20px;
+    width: 60%;
+    float: left;
+    padding-left: 50px;
+    padding-top: 20px;
 }
 
 .resumeContainer {
-	float: left;
-	padding-left: 50px;
-	padding-top: 10px;
+    float: left;
+    padding-left: 50px;
+    padding-top: 10px;
 }
 
 li {
-	margin-top: 0.5em;
-	font-size: 1.1em;
+    margin-top: 0.5em;
+    font-size: 1.1em;
 }
 
 p {
-	font-size: 1.1em;
+    font-size: 1.1em;
 }
 
 .lowerContent {
-	width: 100%;
-	text-align: center;
-	padding-bottom: 50px;
-	float: left;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 50px;
+    float: left;
 }
 
 .contactForm {
-	width: 480px;
-	margin-left: auto;
-	margin-right: auto;
+    width: 480px;
+    margin-left: auto;
+    margin-right: auto;
 }
