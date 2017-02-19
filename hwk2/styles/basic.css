@@ -96,6 +96,10 @@ p {
     display: inline;
 }
 
+.redtext {
+    color: red;
+}
+
 @media screen and (max-width: 840px) {
     .headshot {
         float: none;
