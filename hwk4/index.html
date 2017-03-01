@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <script>
+        const SHIPPING_PRICE = 5.00;
+        const TAX_RATE       = 0.10;
+
+        const ORIGINAL_ITEMS = [
+            {
+                name  : "Burger",
+                price : 10.99,
+                extras: "No Cheese!" 
+            },
+            {
+                name  : "French Fries",
+                price : 6.49,
+                extras: "Please add ketchup on the side."
+            },
+            {
+                name  : "Milkshake",
+                price : 4.99,
+                extras: "Please add a straw"
+            },
+            {
+                name  : "Turkey Club",
+                price : 12.99,
+                extras: "No Mayo!"
+            }
+        ]
+
+        var items = JSON.parse(JSON.stringify(ORIGINAL_ITEMS));
+
+        window.onload = function() {
+            updateReceiptItems();
+        };
+
+        updateReceiptItems = function() {
+            receiptItems = document.getElementById("receiptItems");
+            receiptItems.innerHTML = ""
+            items.forEach(function(i) {
+                var itemHtml = htmlForItem(i);
+                receiptItems.innerHTML += itemHtml;
+            });
+            updateValues();
+        };
+
+        htmlForItem = function(item) {
+            var name = item.name;
+            var price = item.price;
+            var extras = item.extras;
+            console.log("Adding item: " + name);
+            var html = "<div class=\"receiptItem\">";
+            html += "<h2 class=\"receiptName\">" + name + "</h2>";
+            html += "<em class=\"receiptExtras\">" + extras + "</em>";
+            html += "<button class=\"receiptButton\" onclick=\"removeItem('" + name + "');\">Remove</button>";
+            html += "<p class=\"receiptPrice\">Price: " + price.toFixed(2) + "</p>";
+            html += "</div>";
+            html += "<br><br><hr>";
+            return html;
+        };
+
+        updateValues = function() {
+            var subtotal = 0.0;
+            items.forEach(function(item) {
+                subtotal += item.price
+            })
+            var tax = subtotal * TAX_RATE
+            document.getElementById("subtotal").innerHTML = subtotal.toFixed(2);
+            document.getElementById("tax").innerHTML = tax.toFixed(2);
+            document.getElementById("total").innerHTML = (subtotal + tax + SHIPPING_PRICE).toFixed(2);
+        };
+
+        removeItem = function(name) {
+            console.log("Removing: " + name)
+            var index = 0;
+            for (i in items) {
+                var item = items[i]
+                console.log("string item: " + JSON.stringify(item))
+                if (item.name == name) {
+                    console.log("Matching item: " + name)
+                    items.splice(index, 1);
+                    console.log("New items array: " + JSON.stringify(items))
+                }
+                index++;
+            }
+            updateReceiptItems();
+        };
+
+        resetItems = function() {
+            items = JSON.parse(JSON.stringify(ORIGINAL_ITEMS));
+            updateReceiptItems();
+        }
+
+        submitItems = function() {
+            // How do I add the items to json being submitted?
+            document.getElementById("creditForm").submit();
+        }
+    </script>
+    <head>
+        <title>Receipt</title>
+        <link rel="icon" href="http://holub.com/favicon.ico">
+        <link rel="shortcuticon" href="http://holub.com/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="styles/basic.css">
+        <link href="https://fonts.googleapis.com/css?family=Ek+Mukta" rel="stylesheet">
+        <script type="text/javascript" 
+            src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+        <meta charset="UTF-8">
+        <meta name="description" content="A Simple Receipt For Your Order.">
+        <meta keywords="keywords" content="Receipt, Menu, Order, Checkout">
+        <meta name="author" content="Jacob Schmitz">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="shell">
+            <div class="banner">
+                <h1>CHECKOUT</h1>
+            </div>
+            <div class="receipt">
+                <div id="receiptItems">
+                    <!-- This is empty by default, JS will add elements to it -->
+                </div>
+                <div class="creditCardInfo">
+                    <form id="creditForm" action="http://holub.com/echo.php" method="post">
+                        <h3>Enter Your Credit Card Information</h3>
+                        <input class="inputField" name="cc" type="text" id="cc-input"
+                                required placeholder="Credit Card Number">
+                        <br>
+                        <input class="inputField" name="cvv" type="text" id="cvv-input"
+                                required placeholder="CVV">
+                        <br>
+                        <!-- this little onfocus onblur trick was found here:
+                             http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
+                        -->
+                        <input class="inputField" name="expiration" id="exp-input" required 
+                                placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
+                        <br><br>
+                    </form>
+                </div>
+                <div class="costs">
+                    <div class="costTags">
+                        <p><strong>Subtotal:</strong></p>
+                        <p><strong>Tax</strong> <em>(10%)</em>:</p>
+                        <p><strong>Shipping:</strong></p>
+                        <p><strong>Total:</strong></p>
+                    </div>
+                    <div class="prices">
+                        <p id="subtotal">0.00</p>
+                        <p id="tax">0.00</p>
+                        <p id="shipping">5.00</p>
+                        <p id="total">5.00</p>
+                    </div><br>
+                    <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
+                    <br>
+                    <button class="resetButton" type="button" onclick="resetItems();">Reset</button>
+                </div>
+                <!-- <div class="totalBox">
+                    <div class="totalLabel">
+                        <strong>Total:</strong>
+                    </div>
+                    <div class="totalValue">
+                        <strong>$<span id="total">5.00</span></strong>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </body>
+</html>

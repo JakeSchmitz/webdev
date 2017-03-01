@@ -1,0 +1,79 @@
+
+/* Body should have no margin to allow fullscreen background image */
+html, body {
+    margin: 0;
+    padding: 0;
+    height:100%;
+}
+
+.shell {
+    width: 100%;
+    min-height: 100%;
+    float: left;
+    background-color: #dceded;
+}
+
+.banner {
+    background-color: #000;
+    padding: 5pt 30pt 5pt 30pt;
+}
+
+.banner > h1 {
+    color: #fff;
+    margin: 0;
+}
+
+.receipt {
+	padding: 5pt 30pt 5pt 30pt;
+}
+
+.receiptButton {
+	float: right;
+}
+
+.receiptPrice {
+	float: right;
+	margin: 0 5pt 0 0;
+}
+
+.creditCardInfo {
+	float: left;
+}
+
+.costs {
+	float: right;
+}
+
+.costTags {
+	text-align: right;
+	display: inline-block;
+	margin-right: 5pt;
+}
+
+.prices {
+	text-align: left;
+	display: inline-block;
+}
+
+.resetButton {
+	width: 100%;
+}
+
+.inputField {
+	min-width: 200px;
+}
+
+@media screen and (max-width: 840px) {
+    .receipt {
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 841px) {
+    .receipt {
+		padding: 5pt 30pt 5pt 30pt;
+		width: 90%;
+	}
+
+}
+
