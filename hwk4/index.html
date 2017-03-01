@@ -91,6 +91,9 @@
         }
 
         submitItems = function() {
+            // This doesn't necessarily need to be stringified, but it helps for testing against
+            // holub.com/echo.php since that doesn't stringify JSON values
+            document.getElementById("inputItems").value = JSON.stringify(items);
             // How do I add the items to json being submitted?
             document.getElementById("creditForm").submit();
         }
@@ -128,6 +131,7 @@
                         <input class="inputField" name="cvv" type="text" id="cvv-input"
                                 required placeholder="CVV">
                         <br>
+                        <input type="hidden" name="items" id="inputItems">
                         <!-- this little onfocus onblur trick was found here:
                              http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
                         -->
