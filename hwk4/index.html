@@ -63,10 +63,16 @@
             items.forEach(function(item) {
                 subtotal += item.price
             })
-            var tax = subtotal * TAX_RATE
+            var tax = (subtotal * TAX_RATE).toFixed(2);
+            var total = (subtotal + (subtotal * TAX_RATE) + SHIPPING_PRICE).toFixed(2);
+            // Update the displayed costs
             document.getElementById("subtotal").innerHTML = subtotal.toFixed(2);
-            document.getElementById("tax").innerHTML = tax.toFixed(2);
-            document.getElementById("total").innerHTML = (subtotal + tax + SHIPPING_PRICE).toFixed(2);
+            document.getElementById("tax").innerHTML = tax;
+            document.getElementById("total").innerHTML = total;
+            // Update the values that will be submitted on checkout
+            document.getElementById("taxCost").value = tax;
+            document.getElementById("totalCost").value = total;
+            document.getElementById("shippingCost").value = SHIPPING_PRICE.toFixed(2);
         };
 
         removeItem = function(name) {
@@ -132,20 +138,23 @@
                             <input class="inputField" name="cvv" type="text" id="cvv-input"
                                     required placeholder="CVV">
                             <br>
-                            <input type="hidden" name="items" id="inputItems">
                             <!-- this little onfocus onblur trick was found here:
                                  http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
                             -->
                             <input class="inputField" name="expiration" id="exp-input" required 
                                     placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
                             <br><br>
+                            <input type="hidden" name="items" id="inputItems">
+                            <input type="hidden" name="total" id="totalCost">
+                            <input type="hidden" name="tax" id="taxCost">
+                            <input type="hidden" name="shipping" id="shippingCost">
                         </form>
                     </div>
                     <div class="costs">
                         <div class="costTags">
                             <p><strong>Subtotal:</strong></p>
-                            <p><strong>Tax</strong> <em>(10%)</em>:</p>
-                            <p><strong>Shipping:</strong></p>
+                            <p><strong>Tax:</strong> <em>(10%)</em>:</p>
+                            <p><strong>Delivery Fee:</strong></p>
                             <p><strong>Total:</strong></p>
                         </div>
                         <div class="prices">
