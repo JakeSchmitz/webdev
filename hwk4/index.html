@@ -122,49 +122,43 @@
                 <div id="receiptItems">
                     <!-- This is empty by default, JS will add elements to it -->
                 </div>
-                <div class="creditCardInfo">
-                    <form id="creditForm" action="http://holub.com/echo.php" method="post">
-                        <h3>Enter Your Credit Card Information</h3>
-                        <input class="inputField" name="cc" type="text" id="cc-input"
-                                required placeholder="Credit Card Number">
+                <div class="lowerReceipt">
+                    <div class="creditCardInfo">
+                        <form id="creditForm" action="http://holub.com/echo.php" method="post">
+                            <h3>Enter Your Credit Card Information</h3>
+                            <input class="inputField" name="cc" type="text" id="cc-input"
+                                    required placeholder="Credit Card Number">
+                            <br>
+                            <input class="inputField" name="cvv" type="text" id="cvv-input"
+                                    required placeholder="CVV">
+                            <br>
+                            <input type="hidden" name="items" id="inputItems">
+                            <!-- this little onfocus onblur trick was found here:
+                                 http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
+                            -->
+                            <input class="inputField" name="expiration" id="exp-input" required 
+                                    placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
+                            <br><br>
+                        </form>
+                    </div>
+                    <div class="costs">
+                        <div class="costTags">
+                            <p><strong>Subtotal:</strong></p>
+                            <p><strong>Tax</strong> <em>(10%)</em>:</p>
+                            <p><strong>Shipping:</strong></p>
+                            <p><strong>Total:</strong></p>
+                        </div>
+                        <div class="prices">
+                            <p id="subtotal">0.00</p>
+                            <p id="tax">0.00</p>
+                            <p id="shipping">5.00</p>
+                            <p id="total">5.00</p>
+                        </div><br>
+                        <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
                         <br>
-                        <input class="inputField" name="cvv" type="text" id="cvv-input"
-                                required placeholder="CVV">
-                        <br>
-                        <input type="hidden" name="items" id="inputItems">
-                        <!-- this little onfocus onblur trick was found here:
-                             http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
-                        -->
-                        <input class="inputField" name="expiration" id="exp-input" required 
-                                placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
-                        <br><br>
-                    </form>
+                        <button class="resetButton" type="button" onclick="resetItems();">Reset</button>
+                    </div>
                 </div>
-                <div class="costs">
-                    <div class="costTags">
-                        <p><strong>Subtotal:</strong></p>
-                        <p><strong>Tax</strong> <em>(10%)</em>:</p>
-                        <p><strong>Shipping:</strong></p>
-                        <p><strong>Total:</strong></p>
-                    </div>
-                    <div class="prices">
-                        <p id="subtotal">0.00</p>
-                        <p id="tax">0.00</p>
-                        <p id="shipping">5.00</p>
-                        <p id="total">5.00</p>
-                    </div><br>
-                    <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
-                    <br>
-                    <button class="resetButton" type="button" onclick="resetItems();">Reset</button>
-                </div>
-                <!-- <div class="totalBox">
-                    <div class="totalLabel">
-                        <strong>Total:</strong>
-                    </div>
-                    <div class="totalValue">
-                        <strong>$<span id="total">5.00</span></strong>
-                    </div>
-                </div> -->
             </div>
         </div>
     </body>
