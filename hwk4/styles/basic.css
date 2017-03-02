@@ -11,6 +11,7 @@ html, body {
     min-height: 100%;
     float: left;
     background-color: #dceded;
+    padding-bottom: 30pt;
 }
 
 .banner {

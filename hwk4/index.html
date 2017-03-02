@@ -80,11 +80,8 @@
             var index = 0;
             for (i in items) {
                 var item = items[i]
-                console.log("string item: " + JSON.stringify(item))
                 if (item.name == name) {
-                    console.log("Matching item: " + name)
                     items.splice(index, 1);
-                    console.log("New items array: " + JSON.stringify(items))
                 }
                 index++;
             }
