@@ -24,10 +24,6 @@ html, body {
     margin: 0;
 }
 
-#receiptItems {
-	padding: 5pt 30pt 5pt 30pt;
-}
-
 .removeItemButton {
 	float: right;
 }
@@ -41,6 +37,24 @@ html, body {
 	float: left;
 	width: 100%;
 	border-bottom: 1px solid black;
+	margin-bottom: 10pt;
+}
+
+.itemControls {
+	float: right;
+	padding-bottom: 5pt;
+}
+
+.itemText {
+	display: inline-block;
+}
+
+.itemImage {
+	display: inline-block;
+	float: left;
+	width: 100px;
+	height: 100px;
+	margin-right: 10pt;
 }
 
 .itemDetails {
@@ -60,11 +74,6 @@ html, body {
 
 .receiptButton {
 	float: right;
-}
-
-.receiptPrice {
-	float: right;
-	margin: 0 5pt 0 0;
 }
 
 .lowerReceipt {
@@ -116,11 +125,6 @@ html, body {
 		float: left;
 	}
 
-	.receiptPrice {
-		display: block;
-		clear: right;
-	}
-
 	.resetButton {
 		width: 200px;
 	}
@@ -132,6 +136,21 @@ html, body {
 	.items {
 		padding: 5pt 30pt 5pt 30pt;
 		float: left;
+	}
+
+	.item {
+		text-align: center;
+	}
+
+	.itemImage {
+		width: 200px;
+		height: 200px;
+		float: none;
+		margin: 0;
+	}
+
+	.itemText {
+		width: 100%;
 	}
 }
 

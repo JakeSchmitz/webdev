@@ -2,36 +2,43 @@
     {
         "name"   : "Burger",
         "price"  : 10.99,
-        "details": "1/2 lb burger with lettuce, tomatoes, onions and pickles on a sesame seed bun" 
+        "details": "1/2 lb burger with lettuce, tomatoes, onions and pickles on a sesame seed bun",
+        "url"    : "http://usaussie.com/wordpress/wp-content/uploads/2010/03/whiskey-river-bbq-burger-300x300.jpg"
     },
     {
-        "name"  : "Turkey Club",
-        "price" : 12.99,
-        "details": "Turkey, lettuce, tomatoes and mayo on whole wheat toast"
+        "name"   : "Turkey Club",
+        "price"  : 12.99,
+        "details": "Turkey, lettuce, tomatoes and mayo on whole wheat toast",
+        "url"    : "http://cdn2.tmbi.com/TOH/Images/Photos/37/300x300/exps108279_SD153321B01_29_4b.jpg"
     },
     {
         "name"   : "French Fries",
         "price"  : 6.49,
-        "details": "Crisp cut Idaho potatoes fried in bacon grease"
+        "details": "Crisp cut Idaho potatoes fried in bacon grease",
+        "url"    : "http://www.oasisexp.com/wp-content/uploads/2015/10/Masala-Fries-300x300.jpg"
     },
     {
         "name"   : "Mozzarella Sticks",
         "price"  : 7.49,
-        "details": "Comes with a side of marinara sauce"
+        "details": "Comes with a side of marinara sauce",
+        "url"    : "https://sandroslatinfood.com/wp-content/uploads/2017/01/mozzarellasticks-300x300.jpg"
     },
     {
         "name"   : "Vanilla Milkshake",
         "price"  : 4.99,
-        "details": "Whole milk and 3 scoops of vanilla ice cream"
+        "details": "Whole milk and 3 scoops of vanilla ice cream",
+        "url"    : "http://healthymamainfo.com/wp-content/uploads/2013/09/Coconut-Vanilla-Creamy-Milkshake-300x300.jpg"
     },
     {
         "name"   : "Chocolate Milkshake",
         "price"  : 4.99,
-        "details": "Whole milk and 3 scoops of chocolate ice cream"
+        "details": "Whole milk and 3 scoops of chocolate ice cream",
+        "url"    : "http://www.redrobinpa.com/wp-content/uploads/2011/04/monster-300x300.jpg"
     },
     {
         "name"   : "Strawberry Milkshake",
         "price"  : 4.99,
-        "details": "Whole milk and 3 scoops of strawberry ice cream"
+        "details": "Whole milk and 3 scoops of strawberry ice cream",
+        "url"    : "http://www.favouriteslounge.co.uk/wp-content/uploads/2015/06/milkshake-300x300.png"
     }
 ]

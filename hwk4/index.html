@@ -1,68 +1,61 @@
 <!DOCTYPE html>
 <html>
     <script>
-
+        /*
+            Constants used for computing order cost
+        */
         const SHIPPING_PRICE = 5.00;
         const TAX_RATE       = 0.10;
 
+        // inventory contains a map from unique ID to an Item instance
         var inventory = {};
 
-        function get(url) {
-          // Return a new promise.
-          return new Promise( function(resolve, reject) {
-            var req = new XMLHttpRequest();    // Setup to get JSON (or whatever) from a URL
-            req.open('GET', url);
+        /*
+            An Item represents an orderable item that will be displayed in the items list
 
-            req.onload = function() {           // even on 404 errors (200==real success)
-
-              if (req.status == 200) {
-                resolve(req.response);          // Resolve the promise with the response text
-              }
-              else {
-                reject( Error(req.statusText) );    // Reject with the status text which will hopefully be a meaningful error
-              }
-            };
-
-            req.onerror = function() {           // Network (not HTTP) errors
-              reject( Error("Network Error") );
-            };
-
-            // Make the request
-            req.send();
-          });
-        }
-
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min)) + min;
-        }
-
+            Items contain a configurable quantity. When an order is placed all items with a 
+            quantity > 0 will be added to the order. Setting the quantity to 0 effectively
+            removes the item from the pending order. All quantities default to null.
+        */
         class Item {
-            constructor(name, price, details, quantity, id) {
+            constructor(name, price, details, imgUrl, quantity, id) {
                 try {
                     this.name     = name;
                     this.price    = price;
                     this.details  = details;
+                    this.imgUrl   = imgUrl;
                     this.quantity = 0;
-                    this.id       = getRandomInt(10000000,99999999).toString();
+                    this.id       = getRandomId(10000000,99999999).toString();
                 } catch(e) {
                     throw Error("Item must contain name, price, and details.");
                 }
             }
 
+            /*
+                Generate the HTML for this specific item as a string
+            */
             getHTML() {
                 var html = "<div class=\"item\">";
+                html += "<img class=\"itemImage\" src=\"" + this.imgUrl + "\">";
+                html += "<div class=\"itemText\">";
                 html += "<h2 class=\"itemName\">" + this.name + "</h2>";
                 html += "<em class=\"itemDetails\">" + this.details + "</em>";
+                html += "</div>"
+                html += "<div class=\"itemControls\">";
                 html += "<button class=\"removeItemButton\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
                 html += "<input class=\"itemQuantity\" id=\"quantity" + this.id + "\" type=\"number\" placeholder=\"0\" name=\"quantity\" min=\"0\" max=\"10\" onchange=\"updateQuantity(" + this.id + ", this.value)\">";
                 html += "<p class=\"itemPrice\">Price: <span id=\"price" + this.id + "\">" + this.price.toFixed(2) + "</span></p>";
+                html += "</div>"
                 html += "<br><br>";
                 html += "</div>";
                 return html;
             }
 
+            /*
+                Update this items quantity to a non-negative number
+
+                When the quantity is updated update the displayed price for this line item
+            */
             updateQuantity(count) {
                 if (count < 0) {
                     count = 0;
@@ -71,6 +64,12 @@
                 this.updatePrice();
             }
 
+            /*
+                Update the displayed price for this item to reflect the quantity ordered
+
+                When quantity is 0, the price per unit is displayed, but when a quantity > 0 
+                is selected the price will be the price per unit times the quantity
+            */
             updatePrice() {
                 var div = document.getElementById("price" + this.id);
                 var count = this.quantity > 0 ? this.quantity : 1;
@@ -78,11 +77,19 @@
                 document.getElementById("quantity" + this.id).value = this.quantity;
             }
 
+            /*
+                Get the subtotal cost associated with this item, which is equal to the price
+                times the quantity ordered
+            */
             getPrice() {
                 var cost = this.quantity * this.price;
                 return cost;
             }
 
+            /*
+                Generate order info from an item. This will include a cost, but will not
+                include the item details.
+            */
             getOrderInfo() {
                 return {
                     "name": this.name,
@@ -92,15 +99,26 @@
                 }
             }
 
+            /*
+                Simple getter for name
+            */
             getName() {
                 return this.name;
             }
         }
 
+        /*
+            When the window loads initialize the inventory via resetItems
+        */
         window.onload = function() {
             resetItems()
         }
 
+        /*
+            Reset the state of the page by clearing out the existing inventory and re-fetching
+            the complete inventory from items.json and reloading the HTML content of the items
+            div.
+        */
         function resetItems() {
             inventory = {};
             var itemsDiv = document.getElementById("items");
@@ -110,7 +128,7 @@
                     var rawItems = response;
                     var items = JSON.parse(rawItems);
                     items.forEach(function(i) {
-                        var item = new Item(i.name, i.price, i.details);
+                        var item = new Item(i.name, i.price, i.details, i.url);
                         inventory[item.id] = item;
                         itemsDiv.innerHTML += item.getHTML();
                     });
@@ -122,6 +140,12 @@
                 });
         }
 
+        /*
+            Submit an order.
+
+            This function gathers all of the information from the state of inventory and
+            generates a customer and order json objects which are submitted via the creditForm
+        */
         function submitItems() {
             var order = {};
             order.total = 0;
@@ -152,10 +176,17 @@
             document.getElementById("creditForm").submit();
         }
 
+        /*
+            Remove the item identified by id from the pending order by setting 
+            it's quantity to 0.
+        */
         function removeItem(id) {
             updateQuantity(id, 0);
         }
 
+        /*
+            Update the quantity of the item identified by id.
+        */
         function updateQuantity(id, quantity) {
             var item = inventory[id];
             if (!item) {
@@ -168,12 +199,14 @@
             updateValues();
         }
 
+        /*
+            Update the values of total, subtotal and tax in the costs div at the 
+            bottom of the page.
+        */
         function updateValues() {
-            console.log("Updating values");
             var subtotal = 0.0;
             for (key in inventory) {
                 var item = inventory[key];
-                console.log("Updating: " + key + " with price: " + item.getPrice().toString());
                 subtotal += item.getPrice();
             }
             var tax = (subtotal * TAX_RATE).toFixed(2);
@@ -182,6 +215,47 @@
             document.getElementById("subtotal").innerHTML = subtotal.toFixed(2);
             document.getElementById("tax").innerHTML = tax;
             document.getElementById("total").innerHTML = total;
+        }
+
+        /*
+            Below are utility functions that were copy and pasted from either
+            the notes in unex/Session-6 or from StackOverflow
+        */
+        function get(url) {
+          // Return a new promise.
+          return new Promise( function(resolve, reject) {
+            var req = new XMLHttpRequest();    // Setup to get JSON (or whatever) from a URL
+            req.open('GET', url);
+
+            req.onload = function() {           // even on 404 errors (200==real success)
+
+              if (req.status == 200) {
+                resolve(req.response);          // Resolve the promise with the response text
+              }
+              else {
+                reject( Error(req.statusText) );    // Reject with the status text which will hopefully be a meaningful error
+              }
+            };
+
+            req.onerror = function() {           // Network (not HTTP) errors
+              reject( Error("Network Error") );
+            };
+
+            // Make the request
+            req.send();
+          });
+        }
+
+        function getRandomId(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            var randomInt = Math.floor(Math.random() * (max - min)) + min;
+            if (inventory[randomInt] != null) {
+                // Try again if this randomInt is already an assigned key
+                return getRandomId(min, max);
+            } else {
+                return randomInt;
+            }
         }
 
     </script>
@@ -207,9 +281,6 @@
             <div class="items" id="items">
             </div>
             <div class="receipt">
-                <div id="receiptItems">
-                    <!-- This is empty by default, JS will add elements to it -->
-                </div>
                 <div class="lowerReceipt">
                     <div class="creditCardInfo">
                         <form id="creditForm" action="http://holub.com/echo.php" method="post">
