@@ -1,114 +1,197 @@
 <!DOCTYPE html>
 <html>
     <script>
+
         const SHIPPING_PRICE = 5.00;
         const TAX_RATE       = 0.10;
 
-        const ORIGINAL_ITEMS = [
-            {
-                name  : "Burger",
-                price : 10.99,
-                extras: "No Cheese!" 
-            },
-            {
-                name  : "French Fries",
-                price : 6.49,
-                extras: "Please add ketchup on the side."
-            },
-            {
-                name  : "Milkshake",
-                price : 4.99,
-                extras: "Please add a straw"
-            },
-            {
-                name  : "Turkey Club",
-                price : 12.99,
-                extras: "No Mayo!"
-            }
-        ]
+        var inventory = {};
 
-        var items = JSON.parse(JSON.stringify(ORIGINAL_ITEMS));
+        function get(url) {
+          // Return a new promise.
+          return new Promise( function(resolve, reject) {
+            var req = new XMLHttpRequest();    // Setup to get JSON (or whatever) from a URL
+            req.open('GET', url);
+
+            req.onload = function() {           // even on 404 errors (200==real success)
+
+              if (req.status == 200) {
+                resolve(req.response);          // Resolve the promise with the response text
+              }
+              else {
+                reject( Error(req.statusText) );    // Reject with the status text which will hopefully be a meaningful error
+              }
+            };
+
+            req.onerror = function() {           // Network (not HTTP) errors
+              reject( Error("Network Error") );
+            };
+
+            // Make the request
+            req.send();
+          });
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        class Item {
+            constructor(name, price, details, quantity, id) {
+                try {
+                    this.name     = name;
+                    this.price    = price;
+                    this.details  = details;
+                    this.quantity = 0;
+                    this.id       = getRandomInt(10000000,99999999).toString();
+                } catch(e) {
+                    throw Error("Item must contain name, price, and details.");
+                }
+            }
+
+            getHTML() {
+                var html = "<div class=\"item\">";
+                html += "<h2 class=\"itemName\">" + this.name + "</h2>";
+                html += "<em class=\"itemDetails\">" + this.details + "</em>";
+                html += "<button class=\"removeItemButton\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
+                html += "<input class=\"itemQuantity\" id=\"quantity" + this.id + "\" type=\"number\" placeholder=\"0\" name=\"quantity\" min=\"0\" max=\"10\" onchange=\"updateQuantity(" + this.id + ", this.value)\">";
+                html += "<p class=\"itemPrice\">Price: <span id=\"price" + this.id + "\">" + this.price.toFixed(2) + "</span></p>";
+                html += "<br><br>";
+                html += "</div>";
+                return html;
+            }
+
+            updateQuantity(count) {
+                if (count < 0) {
+                    count = 0;
+                }
+                this.quantity = count;
+                this.updatePrice();
+            }
+
+            updatePrice() {
+                var div = document.getElementById("price" + this.id);
+                var count = this.quantity > 0 ? this.quantity : 1;
+                div.innerHTML = (count * this.price).toFixed(2);
+                document.getElementById("quantity" + this.id).value = this.quantity;
+            }
+
+            getPrice() {
+                var cost = this.quantity * this.price;
+                return cost;
+            }
+
+            getOrderInfo() {
+                return {
+                    "name": this.name,
+                    "quantity": this.quantity,
+                    "price": this.price,
+                    "cost": this.price * this.quantity
+                }
+            }
+
+            getName() {
+                return this.name;
+            }
+        }
 
         window.onload = function() {
-            updateReceiptItems();
-        };
+            resetItems()
+        }
 
-        updateReceiptItems = function() {
-            receiptItems = document.getElementById("receiptItems");
-            receiptItems.innerHTML = ""
-            items.forEach(function(i) {
-                var itemHtml = htmlForItem(i);
-                receiptItems.innerHTML += itemHtml;
-            });
+        function resetItems() {
+            inventory = {};
+            var itemsDiv = document.getElementById("items");
+            itemsDiv.innerHTML = "";
+            get('items.json').then(
+                function(response) {
+                    var rawItems = response;
+                    var items = JSON.parse(rawItems);
+                    items.forEach(function(i) {
+                        var item = new Item(i.name, i.price, i.details);
+                        inventory[item.id] = item;
+                        itemsDiv.innerHTML += item.getHTML();
+                    });
+                    updateValues();
+                },
+                function(error) {
+                    console.log("Failed with error: " + e.message);
+                    alert('abort');
+                });
+        }
+
+        function submitItems() {
+            var order = {};
+            order.total = 0;
+            for (key in inventory) {
+                var item = inventory[key];
+                var price = item.getPrice();
+                if ( price > 0) {
+                    order[item.getName()] = item.getOrderInfo();
+                    order.total += price;
+                }
+            }
+            order.tax = parseFloat((TAX_RATE * order.total).toFixed(2));
+            order.shipping = parseFloat(SHIPPING_PRICE.toFixed(2));
+            order.total += (TAX_RATE * order.total) + SHIPPING_PRICE;
+            order.total = parseFloat(order.total.toFixed(2))
+
+            var customer = {}
+            customer.name       =  document.getElementById("name-input").value;
+            customer.cc         =  document.getElementById("cc-input").value;
+            customer.cvv        =  document.getElementById("cvv-input").value;
+            customer.expiration =  document.getElementById("exp-input").value;
+            customer.address    =  document.getElementById("address-input").value;
+
+
+            document.getElementById("order").value = JSON.stringify(order);
+            document.getElementById("customer").value = JSON.stringify(customer);
+            // How do I add the items to json being submitted?
+            document.getElementById("creditForm").submit();
+        }
+
+        function removeItem(id) {
+            updateQuantity(id, 0);
+        }
+
+        function updateQuantity(id, quantity) {
+            var item = inventory[id];
+            if (!item) {
+                throw Error("Could not find item with id: " + id);
+            }
+            if (quantity < 0) {
+                quantity = 0
+            }
+            item.updateQuantity(quantity);
             updateValues();
-        };
+        }
 
-        htmlForItem = function(item) {
-            var name = item.name;
-            var price = item.price;
-            var extras = item.extras;
-            console.log("Adding item: " + name);
-            var html = "<div class=\"receiptItem\">";
-            html += "<h2 class=\"receiptName\">" + name + "</h2>";
-            html += "<em class=\"receiptExtras\">" + extras + "</em>";
-            html += "<button class=\"receiptButton\" onclick=\"removeItem('" + name + "');\">Remove</button>";
-            html += "<p class=\"receiptPrice\">Price: " + price.toFixed(2) + "</p>";
-            html += "</div>";
-            html += "<br><br><hr>";
-            return html;
-        };
-
-        updateValues = function() {
+        function updateValues() {
+            console.log("Updating values");
             var subtotal = 0.0;
-            items.forEach(function(item) {
-                subtotal += item.price
-            })
+            for (key in inventory) {
+                var item = inventory[key];
+                console.log("Updating: " + key + " with price: " + item.getPrice().toString());
+                subtotal += item.getPrice();
+            }
             var tax = (subtotal * TAX_RATE).toFixed(2);
             var total = (subtotal + (subtotal * TAX_RATE) + SHIPPING_PRICE).toFixed(2);
             // Update the displayed costs
             document.getElementById("subtotal").innerHTML = subtotal.toFixed(2);
             document.getElementById("tax").innerHTML = tax;
             document.getElementById("total").innerHTML = total;
-            // Update the values that will be submitted on checkout
-            document.getElementById("taxCost").value = tax;
-            document.getElementById("totalCost").value = total;
-            document.getElementById("shippingCost").value = SHIPPING_PRICE.toFixed(2);
-        };
-
-        removeItem = function(name) {
-            console.log("Removing: " + name)
-            var index = 0;
-            for (i in items) {
-                var item = items[i]
-                if (item.name == name) {
-                    items.splice(index, 1);
-                }
-                index++;
-            }
-            updateReceiptItems();
-        };
-
-        resetItems = function() {
-            items = JSON.parse(JSON.stringify(ORIGINAL_ITEMS));
-            updateReceiptItems();
         }
 
-        submitItems = function() {
-            // This doesn't necessarily need to be stringified, but it helps for testing against
-            // holub.com/echo.php since that doesn't stringify JSON values
-            document.getElementById("inputItems").value = JSON.stringify(items);
-            // How do I add the items to json being submitted?
-            document.getElementById("creditForm").submit();
-        }
     </script>
+
     <head>
         <title>Receipt</title>
         <link rel="icon" href="http://holub.com/favicon.ico">
         <link rel="shortcuticon" href="http://holub.com/favicon.ico">
         <link rel="stylesheet" type="text/css" href="styles/basic.css">
         <link href="https://fonts.googleapis.com/css?family=Ek+Mukta" rel="stylesheet">
-        <script type="text/javascript" 
-            src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
         <meta charset="UTF-8">
         <meta name="description" content="A Simple Receipt For Your Order.">
@@ -121,6 +204,8 @@
             <div class="banner">
                 <h1>CHECKOUT</h1>
             </div>
+            <div class="items" id="items">
+            </div>
             <div class="receipt">
                 <div id="receiptItems">
                     <!-- This is empty by default, JS will add elements to it -->
@@ -129,22 +214,25 @@
                     <div class="creditCardInfo">
                         <form id="creditForm" action="http://holub.com/echo.php" method="post">
                             <h3>Enter Your Credit Card Information</h3>
-                            <input class="inputField" name="cc" type="text" id="cc-input"
+                            <input class="inputField" type="text" id="name-input"
+                                    required placeholder="Full Name">
+                            <br>
+                            <input class="inputField" type="text" id="address-input"
+                                    required placeholder="Street Address">
+                            <br>
+                            <input class="inputField" type="text" id="cc-input"
                                     required placeholder="Credit Card Number">
                             <br>
-                            <input class="inputField" name="cvv" type="text" id="cvv-input"
+                            <input style="width:60px" type="text" id="cvv-input"
                                     required placeholder="CVV">
-                            <br>
                             <!-- this little onfocus onblur trick was found here:
                                  http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
                             -->
-                            <input class="inputField" name="expiration" id="exp-input" required 
+                            <input style="width:130px" id="exp-input" required 
                                     placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
                             <br><br>
-                            <input type="hidden" name="items" id="inputItems">
-                            <input type="hidden" name="total" id="totalCost">
-                            <input type="hidden" name="tax" id="taxCost">
-                            <input type="hidden" name="shipping" id="shippingCost">
+                            <input type="hidden" name="order" id="order">
+                            <input type="hidden" name="customer" id="customer">
                         </form>
                     </div>
                     <div class="costs">
