@@ -148,19 +148,20 @@
         */
         function submitItems() {
             var order = {};
-            order.total = 0;
+            var subtotal = 0;
             for (key in inventory) {
                 var item = inventory[key];
                 var price = item.getPrice();
                 if ( price > 0) {
                     order[item.getName()] = item.getOrderInfo();
-                    order.total += price;
+                    subtotal += price;
                 }
             }
-            order.tax = parseFloat((TAX_RATE * order.total).toFixed(2));
-            order.shipping = parseFloat(SHIPPING_PRICE.toFixed(2));
-            order.total += (TAX_RATE * order.total) + SHIPPING_PRICE;
-            order.total = parseFloat(order.total.toFixed(2))
+            var tax = parseFloat((TAX_RATE * subtotal).toFixed(2));
+            var shipping = parseFloat(SHIPPING_PRICE.toFixed(2));
+            var total = subtotal + (TAX_RATE * subtotal) + SHIPPING_PRICE;
+            total = parseFloat(total.toFixed(2))
+            subtotal = parseFloat(subtotal.toFixed(2))
 
             var customer = {}
             customer.name       =  document.getElementById("name-input").value;
@@ -172,6 +173,10 @@
 
             document.getElementById("order").value = JSON.stringify(order);
             document.getElementById("customer").value = JSON.stringify(customer);
+            document.getElementById("tax").value = tax
+            document.getElementById("shipping").value = shipping
+            document.getElementById("subtotal").value = subtotal
+            document.getElementById("total").value = total
             // How do I add the items to json being submitted?
             document.getElementById("creditForm").submit();
         }
@@ -212,9 +217,9 @@
             var tax = (subtotal * TAX_RATE).toFixed(2);
             var total = (subtotal + (subtotal * TAX_RATE) + SHIPPING_PRICE).toFixed(2);
             // Update the displayed costs
-            document.getElementById("subtotal").innerHTML = subtotal.toFixed(2);
-            document.getElementById("tax").innerHTML = tax;
-            document.getElementById("total").innerHTML = total;
+            document.getElementById("currentSubtotal").innerHTML = subtotal.toFixed(2);
+            document.getElementById("currentTax").innerHTML = tax;
+            document.getElementById("currentTotal").innerHTML = total;
         }
 
         /*
@@ -250,6 +255,7 @@
             min = Math.ceil(min);
             max = Math.floor(max);
             var randomInt = Math.floor(Math.random() * (max - min)) + min;
+            // Check if this randomInt is already a key in the inventory map
             if (inventory[randomInt] != null) {
                 // Try again if this randomInt is already an assigned key
                 return getRandomId(min, max);
@@ -296,14 +302,23 @@
                             <br>
                             <input style="width:60px" type="text" id="cvv-input"
                                     required placeholder="CVV">
-                            <!-- this little onfocus onblur trick was found here:
-                                 http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
+                            <!-- 
+                                this little onfocus onblur trick was found here:
+                                http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
                             -->
                             <input style="width:130px" id="exp-input" required 
                                     placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
                             <br><br>
+                            <!-- 
+                                Below are all of the values that are actually submitted when an order is placed
+                                The above input fields don't have names, so they aren't submitted with the form
+                            -->
                             <input type="hidden" name="order" id="order">
                             <input type="hidden" name="customer" id="customer">
+                            <input type="hidden" name="tax" id="tax">
+                            <input type="hidden" name="shipping" id="shipping">
+                            <input type="hidden" name="subtotal" id="subtotal">
+                            <input type="hidden" name="total" id="total">
                         </form>
                     </div>
                     <div class="costs">
@@ -314,10 +329,10 @@
                             <p><strong>Total:</strong></p>
                         </div>
                         <div class="prices">
-                            <p id="subtotal">0.00</p>
-                            <p id="tax">0.00</p>
-                            <p id="shipping">5.00</p>
-                            <p id="total">5.00</p>
+                            <p id="currentSubtotal">0.00</p>
+                            <p id="currentTax">0.00</p>
+                            <p id="currentShipping">5.00</p>
+                            <p id="currentTotal">5.00</p>
                         </div><br>
                         <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
                         <br>
