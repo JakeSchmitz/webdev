@@ -147,13 +147,13 @@
             generates a customer and order json objects which are submitted via the creditForm
         */
         function submitItems() {
-            var order = {};
+            var order = [];
             var subtotal = 0;
             for (key in inventory) {
                 var item = inventory[key];
                 var price = item.getPrice();
                 if ( price > 0) {
-                    order[item.getName()] = item.getOrderInfo();
+                    order.push(item.getOrderInfo());
                     subtotal += price;
                 }
             }
