@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Jacob Schmitz Resume</title>
+        <link rel="icon" href="http://holub.com/favicon.ico">
+        <link rel="shortcuticon" href="http://holub.com/favicon.ico">
+
+        <meta charset="UTF-8">
+        <meta name="description" content="Portfolio website for Jacob Schmitz.">
+        <meta keywords="keywords" content="Jake, Jacob, Baicker, Schmitz, Portfolio">
+        <meta name="author" content="Jacob Schmitz">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- you can download boostrap as well: http://getbootstrap.com/getting-started/ -->
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+            integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+            crossorigin="anonymous">
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins). Can go at end of body if you
+             don't use jquery in the head element 
+        -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+        <!-- Load my CSS last to override anything I need overridden -->
+        <link rel="stylesheet" type="text/css" href="styles/basic.css">
+
+        <script>
+            // chose 970 because that's what looked best in chrome
+            const MOBILE_SCREEN_WIDTH = 970;
+
+            window.onload = function () {
+                adjustImagePull()
+            }
+
+            window.onresize = function() {
+                adjustImagePull();
+            }
+
+            // This would be unnecessary if the assignment didn't specifically say no @media queries in css
+            // adjustImagePull is responsible for pulling the headshot image to the right on large screens
+            adjustImagePull = function() {
+                if ($(window).width() >  MOBILE_SCREEN_WIDTH) {
+                    $("#headshot").parent().addClass("pull-right");
+                } else {
+                    $("#headshot").parent().removeClass("pull-right");
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Homework 5</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/resume.html">Resumè</a></li>
+                        <li><a href="/order.html">Order</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container main-content">
+            <div>
+                <h1>Jake's Resumè</h1>
+            </div>
+            <div class="row">
+                <!-- Assume pull-right by default, but onload we'll adjust -->
+                <div class="col-md-4 centered pull-right">
+                    <img src="images/headshot.jpg" class="headshot" id="headshot">
+                </div>
+                <div class="col-md-8">
+                    <div class="missionContainer">
+                        <h1>About Jake</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, <span class="redtext">quis nostrud exercitation</span> ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, <span class="redtext">consectetur adipiscing elit</span>, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                    <div class="resumeContainer">
+                        <h1>Jake's Background</h1>
+                        <h3>Education</h3>
+                        <div class="myList">
+                            <div class="myListElement"><p>Tufts University School of Engineering: BS Engineering (May 2015)</p></div>
+                            <div class="myListElement"><p>Columbia High School - Maplewood, NJ (June 2011)</p></div>
+                        </div>
+                        <h3>Work</h3>
+                        <div class="myList">
+                            <div class="myListElement"><p>Vantiq Inc. - Software Engineer (April 2016 - Present)</p></div>
+                            <div class="myListElement"><p>Cloudera - Software Engineer (July 2015 - March 2016)</p></div>
+                            <div class="myListElement"><p>Tufts University CS Department - Lab Instructor (September 2014 - November 2015)</p></div>
+                            <div class="myListElement"><p>South Orange Maplewood School District - IT Technician (June 2010 - August 2012)</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 centered">
+                    <h1>Send Jake a Message</h1>
+                    <form class="contactForm" action="http://holub.com/echo.php" method="post">
+                        <div class="form-group">
+                            <textarea class="form-control" rows="4" name="message" placeholder="Enter a message"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" type="text" list="data-list" name="requestType" placeholder="Request Type">
+                            <datalist id="data-list">
+                                <option value="Advice"></option>
+                                <option value="Interview"></option>
+                                <option value="Contracting"></option>
+                                <option value="Other"></option>
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <h3>Your Contact Info</h3>
+                            <input class="form-control" name="phone" type="tel" id="tel-input"
+                                    required placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="email" type="email" id="email-input"
+                                required multiple placeholder="Email Address">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control btn btn-success" type="submit" value="Submit">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6 centered">
+                    <h1>Contact Jake</h1>
+                    <p>Email: <a href="mailto:jake.schmitz101@gmail.com" target="_top">jake.schmitz101@gmail.com</a></p>
+                    <p>Github: <a href="https://github.com/JakeSchmitz" target="_top">github.com/JakeSchmitz</a></p>
+                    <p>Mobile: (973)-809-8475</p>
+                    <p>Address: 12 Highland Ave<br>Maplewood, NJ, 07040</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</html>

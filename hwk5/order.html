@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Receipt</title>
+        <link rel="icon" href="http://holub.com/favicon.ico">
+        <link rel="shortcuticon" href="http://holub.com/favicon.ico">
+        <meta charset="UTF-8">
+        <meta name="description" content="A Simple Receipt For Your Order.">
+        <meta keywords="keywords" content="Receipt, Menu, Order, Checkout">
+        <meta name="author" content="Jacob Schmitz">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- you can download boostrap as well: http://getbootstrap.com/getting-started/ -->
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+            integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+            crossorigin="anonymous">
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins). Can go at end of body if you
+             don't use jquery in the head element 
+        -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+        <!-- Load my CSS last to override anything I need overridden -->
+        <link rel="stylesheet" type="text/css" href="styles/basic.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Homework 5</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/resume.html">Resumè</a></li>
+                        <li><a href="/order.html">Order</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container main-content">
+            <div class="banner">
+                <h1>CHECKOUT</h1>
+            </div>
+            <div class="items" id="items">
+            </div>
+            <div class="receipt">
+                <div class="lowerReceipt">
+                    <div class="creditCardInfo">
+                        <form id="creditForm" action="http://holub.com/echo.php" method="post">
+                            <h3>Enter Your Credit Card Information</h3>
+                            <input class="inputField" type="text" id="name-input"
+                                    required placeholder="Full Name">
+                            <br>
+                            <input class="inputField" type="text" id="address-input"
+                                    required placeholder="Street Address">
+                            <br>
+                            <input class="inputField" type="text" id="cc-input"
+                                    required placeholder="Credit Card Number">
+                            <br>
+                            <input style="width:60px" type="text" id="cvv-input"
+                                    required placeholder="CVV">
+                            <!-- 
+                                this little onfocus onblur trick was found here:
+                                http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
+                            -->
+                            <input style="width:130px" id="exp-input" required 
+                                    placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
+                            <br><br>
+                            <!-- 
+                                Below are all of the values that are actually submitted when an order is placed
+                                The above input fields don't have names, so they aren't submitted with the form
+                            -->
+                            <input type="hidden" name="order" id="order">
+                            <input type="hidden" name="customer" id="customer">
+                            <input type="hidden" name="tax" id="tax">
+                            <input type="hidden" name="shipping" id="shipping">
+                            <input type="hidden" name="subtotal" id="subtotal">
+                            <input type="hidden" name="total" id="total">
+                        </form>
+                    </div>
+                    <div class="costs">
+                        <div class="costTags">
+                            <p><strong>Subtotal:</strong></p>
+                            <p><strong>Tax:</strong> <em>(10%)</em>:</p>
+                            <p><strong>Delivery Fee:</strong></p>
+                            <p><strong>Total:</strong></p>
+                        </div>
+                        <div class="prices">
+                            <p id="currentSubtotal">0.00</p>
+                            <p id="currentTax">0.00</p>
+                            <p id="currentShipping">5.00</p>
+                            <p id="currentTotal">5.00</p>
+                        </div><br>
+                        <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
+                        <br>
+                        <button class="resetButton" type="button" onclick="resetItems();">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <!-- My custom javascript for pulling in and rendering the items -->
+    <script>
+        /*
+            Constants used for computing order cost
+        */
+        const SHIPPING_PRICE = 5.00;
+        const TAX_RATE       = 0.10;
+
+        // inventory contains a map from unique ID to an Item instance
+        var inventory = {};
+
+        /*
+            An Item represents an orderable item that will be displayed in the items list
+
+            Items contain a configurable quantity. When an order is placed all items with a 
+            quantity > 0 will be added to the order. Setting the quantity to 0 effectively
+            removes the item from the pending order. All quantities default to null.
+        */
+        class Item {
+            constructor(name, price, details, imgUrl, quantity, id) {
+                try {
+                    this.name     = name;
+                    this.price    = price;
+                    this.details  = details;
+                    this.imgUrl   = imgUrl;
+                    this.quantity = 0;
+                    this.id       = getRandomId(10000000,99999999).toString();
+                } catch(e) {
+                    throw Error("Item must contain name, price, and details.");
+                }
+            }
+
+            /*
+                Generate the HTML for this specific item as a string
+            */
+            getHTML() {
+                var html = "<div class=\"item\">";
+                html += "<img class=\"itemImage\" src=\"" + this.imgUrl + "\">";
+                html += "<div class=\"itemText\">";
+                html += "<h2 class=\"itemName\">" + this.name + "</h2>";
+                html += "<em class=\"itemDetails\">" + this.details + "</em>";
+                html += "</div>"
+                html += "<div class=\"itemControls\">";
+                html += "<button class=\"removeItemButton\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
+                html += "<input class=\"itemQuantity\" id=\"quantity" + this.id + "\" type=\"number\" placeholder=\"0\" name=\"quantity\" min=\"0\" max=\"10\" onchange=\"updateQuantity(" + this.id + ", this.value)\">";
+                html += "<p class=\"itemPrice\">Price: <span id=\"price" + this.id + "\">" + this.price.toFixed(2) + "</span></p>";
+                html += "</div>"
+                html += "<br><br>";
+                html += "</div>";
+                return html;
+            }
+
+            /*
+                Update this items quantity to a non-negative number
+
+                When the quantity is updated update the displayed price for this line item
+            */
+            updateQuantity(count) {
+                if (count < 0) {
+                    count = 0;
+                }
+                this.quantity = count;
+                this.updatePrice();
+            }
+
+            /*
+                Update the displayed price for this item to reflect the quantity ordered
+
+                When quantity is 0, the price per unit is displayed, but when a quantity > 0 
+                is selected the price will be the price per unit times the quantity
+            */
+            updatePrice() {
+                var div = document.getElementById("price" + this.id);
+                var count = this.quantity > 0 ? this.quantity : 1;
+                div.innerHTML = (count * this.price).toFixed(2);
+                document.getElementById("quantity" + this.id).value = this.quantity;
+            }
+
+            /*
+                Get the subtotal cost associated with this item, which is equal to the price
+                times the quantity ordered
+            */
+            getPrice() {
+                var cost = this.quantity * this.price;
+                return cost;
+            }
+
+            /*
+                Generate order info from an item. This will include a cost, but will not
+                include the item details.
+            */
+            getOrderInfo() {
+                return {
+                    "name": this.name,
+                    "quantity": this.quantity,
+                    "price": this.price,
+                    "cost": this.price * this.quantity
+                }
+            }
+
+            /*
+                Simple getter for name
+            */
+            getName() {
+                return this.name;
+            }
+        }
+
+        /*
+            When the window loads initialize the inventory via resetItems
+        */
+        window.onload = function() {
+            resetItems()
+        }
+
+        /*
+            Reset the state of the page by clearing out the existing inventory and re-fetching
+            the complete inventory from items.json and reloading the HTML content of the items
+            div.
+        */
+        function resetItems() {
+            inventory = {};
+            var itemsDiv = document.getElementById("items");
+            itemsDiv.innerHTML = "";
+            get('items.json').then(
+                function(response) {
+                    var rawItems = response;
+                    var items = JSON.parse(rawItems);
+                    items.forEach(function(i) {
+                        var item = new Item(i.name, i.price, i.details, i.url);
+                        inventory[item.id] = item;
+                        itemsDiv.innerHTML += item.getHTML();
+                    });
+                    updateValues();
+                },
+                function(error) {
+                    console.log("Failed with error: " + e.message);
+                    alert('abort');
+                });
+        }
+
+        /*
+            Submit an order.
+
+            This function gathers all of the information from the state of inventory and
+            generates a customer and order json objects which are submitted via the creditForm
+        */
+        function submitItems() {
+            var order = [];
+            var subtotal = 0;
+            for (key in inventory) {
+                var item = inventory[key];
+                var price = item.getPrice();
+                if ( price > 0) {
+                    order.push(item.getOrderInfo());
+                    subtotal += price;
+                }
+            }
+            var tax = parseFloat((TAX_RATE * subtotal).toFixed(2));
+            var shipping = parseFloat(SHIPPING_PRICE.toFixed(2));
+            var total = subtotal + (TAX_RATE * subtotal) + SHIPPING_PRICE;
+            total = parseFloat(total.toFixed(2))
+            subtotal = parseFloat(subtotal.toFixed(2))
+
+            var customer = {}
+            customer.name       =  document.getElementById("name-input").value;
+            customer.cc         =  document.getElementById("cc-input").value;
+            customer.cvv        =  document.getElementById("cvv-input").value;
+            customer.expiration =  document.getElementById("exp-input").value;
+            customer.address    =  document.getElementById("address-input").value;
+
+
+            document.getElementById("order").value = JSON.stringify(order);
+            document.getElementById("customer").value = JSON.stringify(customer);
+            document.getElementById("tax").value = tax
+            document.getElementById("shipping").value = shipping
+            document.getElementById("subtotal").value = subtotal
+            document.getElementById("total").value = total
+            // How do I add the items to json being submitted?
+            document.getElementById("creditForm").submit();
+        }
+
+        /*
+            Remove the item identified by id from the pending order by setting 
+            it's quantity to 0.
+        */
+        function removeItem(id) {
+            updateQuantity(id, 0);
+        }
+
+        /*
+            Update the quantity of the item identified by id.
+        */
+        function updateQuantity(id, quantity) {
+            var item = inventory[id];
+            if (!item) {
+                throw Error("Could not find item with id: " + id);
+            }
+            if (quantity < 0) {
+                quantity = 0
+            }
+            item.updateQuantity(quantity);
+            updateValues();
+        }
+
+        /*
+            Update the values of total, subtotal and tax in the costs div at the 
+            bottom of the page.
+        */
+        function updateValues() {
+            var subtotal = 0.0;
+            for (key in inventory) {
+                var item = inventory[key];
+                subtotal += item.getPrice();
+            }
+            var tax = (subtotal * TAX_RATE).toFixed(2);
+            var total = (subtotal + (subtotal * TAX_RATE) + SHIPPING_PRICE).toFixed(2);
+            // Update the displayed costs
+            document.getElementById("currentSubtotal").innerHTML = subtotal.toFixed(2);
+            document.getElementById("currentTax").innerHTML = tax;
+            document.getElementById("currentTotal").innerHTML = total;
+        }
+
+        /*
+            Below are utility functions that were copy and pasted from either
+            the notes in unex/Session-6 or from StackOverflow
+        */
+        function get(url) {
+          // Return a new promise.
+          return new Promise( function(resolve, reject) {
+            var req = new XMLHttpRequest();    // Setup to get JSON (or whatever) from a URL
+            req.open('GET', url);
+
+            req.onload = function() {           // even on 404 errors (200==real success)
+
+              if (req.status == 200) {
+                resolve(req.response);          // Resolve the promise with the response text
+              }
+              else {
+                reject( Error(req.statusText) );    // Reject with the status text which will hopefully be a meaningful error
+              }
+            };
+
+            req.onerror = function() {           // Network (not HTTP) errors
+              reject( Error("Network Error") );
+            };
+
+            // Make the request
+            req.send();
+          });
+        }
+
+        function getRandomId(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            var randomInt = Math.floor(Math.random() * (max - min)) + min;
+            // Check if this randomInt is already a key in the inventory map
+            if (inventory[randomInt] != null) {
+                // Try again if this randomInt is already an assigned key
+                return getRandomId(min, max);
+            } else {
+                return randomInt;
+            }
+        }
+
+    </script>
+</html>
