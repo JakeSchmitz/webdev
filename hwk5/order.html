@@ -53,62 +53,65 @@
             </div>
         </nav>
         <div class="container main-content">
-            <div class="banner">
+            <div class="row">
                 <h1>CHECKOUT</h1>
             </div>
-            <div class="items" id="items">
-            </div>
-            <div class="receipt">
-                <div class="lowerReceipt">
-                    <div class="creditCardInfo">
-                        <form id="creditForm" action="http://holub.com/echo.php" method="post">
-                            <h3>Enter Your Credit Card Information</h3>
-                            <input class="inputField" type="text" id="name-input"
-                                    required placeholder="Full Name">
-                            <br>
-                            <input class="inputField" type="text" id="address-input"
-                                    required placeholder="Street Address">
-                            <br>
-                            <input class="inputField" type="text" id="cc-input"
-                                    required placeholder="Credit Card Number">
-                            <br>
-                            <input style="width:60px" type="text" id="cvv-input"
-                                    required placeholder="CVV">
-                            <!-- 
-                                this little onfocus onblur trick was found here:
-                                http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
-                            -->
-                            <input style="width:130px" id="exp-input" required 
-                                    placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
-                            <br><br>
-                            <!-- 
-                                Below are all of the values that are actually submitted when an order is placed
-                                The above input fields don't have names, so they aren't submitted with the form
-                            -->
-                            <input type="hidden" name="order" id="order">
-                            <input type="hidden" name="customer" id="customer">
-                            <input type="hidden" name="tax" id="tax">
-                            <input type="hidden" name="shipping" id="shipping">
-                            <input type="hidden" name="subtotal" id="subtotal">
-                            <input type="hidden" name="total" id="total">
-                        </form>
-                    </div>
-                    <div class="costs">
-                        <div class="costTags">
-                            <p><strong>Subtotal:</strong></p>
-                            <p><strong>Tax:</strong> <em>(10%)</em>:</p>
-                            <p><strong>Delivery Fee:</strong></p>
-                            <p><strong>Total:</strong></p>
+            <div class="row">
+                <div class="items col-md-8 container" id="items">
+                </div>
+                <div class="receipt col-md-4" id="receipt">
+                    <div class="lowerReceipt">
+                        <div class="creditCardInfo">
+                            <form id="creditForm" action="http://holub.com/echo.php" method="post">
+                                <h3>Enter Your Credit Card Information</h3>
+                                <input class="form-control" type="text" id="name-input"
+                                        required placeholder="Full Name">
+                                <input class="form-control" type="text" id="address-input"
+                                        required placeholder="Street Address">
+                                <input class="form-control" type="text" id="cc-input"
+                                        required placeholder="Credit Card Number">
+                                <div class="input-group">
+                                <input class="form-control" type="text" id="cvv-input"
+                                        required placeholder="CVV">
+                                <span class="input-group-addon" style="display: hidden;"></span>
+                                <!-- 
+                                    this little onfocus onblur trick was found here:
+                                    http://stackoverflow.com/questions/20321202/not-showing-placeholder-for-input-type-date-field-ios-phonegap-app
+                                -->
+                                <input class="form-control"  id="exp-input" required 
+                                        placeholder="Expiration Date" type="text" onfocus="(this.type='month')" onblur="(this.type='text')">
+                                </div>
+                                <br><br>
+                                <!-- 
+                                    Below are all of the values that are actually submitted when an order is placed
+                                    The above input fields don't have names, so they aren't submitted with the form
+                                -->
+                                <input type="hidden" name="order" id="order">
+                                <input type="hidden" name="customer" id="customer">
+                                <input type="hidden" name="tax" id="tax">
+                                <input type="hidden" name="shipping" id="shipping">
+                                <input type="hidden" name="subtotal" id="subtotal">
+                                <input type="hidden" name="total" id="total">
+                            </form>
                         </div>
-                        <div class="prices">
-                            <p id="currentSubtotal">0.00</p>
-                            <p id="currentTax">0.00</p>
-                            <p id="currentShipping">5.00</p>
-                            <p id="currentTotal">5.00</p>
-                        </div><br>
-                        <button class="resetButton" type="button" onclick="submitItems();">Checkout</button>
-                        <br>
-                        <button class="resetButton" type="button" onclick="resetItems();">Reset</button>
+                        <div class="costs">
+                            <div class="costTags">
+                                <p><strong>Subtotal:</strong></p>
+                                <p><strong>Tax:</strong> <em>(10%)</em>:</p>
+                                <p><strong>Delivery Fee:</strong></p>
+                                <p><strong>Total:</strong></p>
+                            </div>
+                            <div class="prices">
+                                <p id="currentSubtotal">0.00</p>
+                                <p id="currentTax">0.00</p>
+                                <p id="currentShipping">5.00</p>
+                                <p id="currentTotal">5.00</p>
+                            </div><br>
+                            <div class="btn-group">
+                                <button class="resetButton btn btn-success" type="button" onclick="submitItems();">Checkout</button>
+                                <button class="resetButton btn btn-danger" type="button" onclick="resetItems();">Reset</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

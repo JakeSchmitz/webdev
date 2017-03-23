@@ -26,3 +26,22 @@
     padding-left: 6pt;
     display: inline;
 }
+
+.creditCardInfo {
+	float: left;
+}
+
+.costs {
+	float: right;
+}
+
+.costTags {
+	text-align: right;
+	display: inline-block;
+	margin-right: 5pt;
+}
+
+.prices {
+	text-align: left;
+	display: inline-block;
+}
