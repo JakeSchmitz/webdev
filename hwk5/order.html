@@ -156,19 +156,20 @@
                 Generate the HTML for this specific item as a string
             */
             getHTML() {
-                var html = "<div class=\"item\">";
-                html += "<img class=\"itemImage\" src=\"" + this.imgUrl + "\">";
-                html += "<div class=\"itemText\">";
+                var html = "<div class=\"item row\">";
+                html += "<div class=\"col-md-8\">";
+                html += "<div class=\"col-md-4\"><img class=\"itemImage\" src=\"" + this.imgUrl + "\"></div>";
+                html += "<div class=\"itemText col-md-4\">";
                 html += "<h2 class=\"itemName\">" + this.name + "</h2>";
                 html += "<em class=\"itemDetails\">" + this.details + "</em>";
-                html += "</div>"
-                html += "<div class=\"itemControls\">";
-                html += "<button class=\"removeItemButton\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
+                html += "</div></div>"
+                html += "<div class=\"itemControls col-md-4\">";
+                html += "<button class=\"removeItemButton btn btn-danger\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
                 html += "<input class=\"itemQuantity\" id=\"quantity" + this.id + "\" type=\"number\" placeholder=\"0\" name=\"quantity\" min=\"0\" max=\"10\" onchange=\"updateQuantity(" + this.id + ", this.value)\">";
                 html += "<p class=\"itemPrice\">Price: <span id=\"price" + this.id + "\">" + this.price.toFixed(2) + "</span></p>";
                 html += "</div>"
-                html += "<br><br>";
                 html += "</div>";
+                html += "<br><hr><br>";
                 return html;
             }
 
