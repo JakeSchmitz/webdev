@@ -30,6 +30,32 @@
 
         <!-- Load my CSS last to override anything I need overridden -->
         <link rel="stylesheet" type="text/css" href="styles/basic.css">
+
+        <script>
+            // chose 970 because that's what looked best in chrome
+            const MOBILE_SCREEN_WIDTH = 970;
+
+            $(function () {
+                adjustReceiptFixed();
+            })
+
+            window.onresize = function() {
+                adjustReceiptFixed();
+            }
+
+            // This would be unnecessary if the assignment didn't specifically say no @media queries in css
+            // adjustImagePull is responsible for pulling the headshot image to the right on large screens
+            adjustReceiptFixed = function() {
+                if ($(window).width() >  MOBILE_SCREEN_WIDTH) {
+                    $("#receipt").css("position", "fixed");
+                    // Picked 20 because it looks good in chrome
+                    $("#receipt").css("right", 20);
+                } else {
+                    // don't fix the receipt on small devices
+                    $("#receipt").css("position", "relative").css("right", "none");
+                }
+            }
+        </script>
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -54,7 +80,7 @@
         </nav>
         <div class="container main-content">
             <div class="row">
-                <h1>CHECKOUT</h1>
+                <h1>PLACE AN ORDER</h1>
             </div>
             <div class="row">
                 <div class="items col-md-8 container" id="items">
@@ -142,8 +168,9 @@
             removes the item from the pending order. All quantities default to null.
         */
         class Item {
-            constructor(name, price, details, imgUrl, quantity, id) {
+            constructor(divReference, name, price, details, imgUrl, quantity, id) {
                 try {
+                    this.div      = $(divReference);
                     this.name     = name;
                     this.price    = price;
                     this.details  = details;
@@ -156,24 +183,90 @@
             }
 
             /*
-                Generate the HTML for this specific item as a string
+                Render this item in the div assigned in the constructor
+
+                Honestly, this feels worse than the previous html implementation 
+                (see: https://github.com/JakeSchmitz/webdev/blob/master/hwk4/index.html#L37-L52)
             */
-            getHTML() {
-                var html = "<div class=\"item row\">";
-                html += "<div class=\"col-md-8\">";
-                html += "<div class=\"col-md-4\"><img class=\"itemImage\" src=\"" + this.imgUrl + "\"></div>";
-                html += "<div class=\"itemText col-md-4\">";
-                html += "<h2 class=\"itemName\">" + this.name + "</h2>";
-                html += "<em class=\"itemDetails\">" + this.details + "</em>";
-                html += "</div></div>"
-                html += "<div class=\"itemControls col-md-4\">";
-                html += "<button class=\"removeItemButton btn btn-danger\" onclick=\"removeItem(" + this.id + ");\">Remove</button>";
-                html += "<input class=\"itemQuantity\" id=\"quantity" + this.id + "\" type=\"number\" placeholder=\"0\" name=\"quantity\" min=\"0\" max=\"10\" onchange=\"updateQuantity(" + this.id + ", this.value)\">";
-                html += "<p class=\"itemPrice\">Price: <span id=\"price" + this.id + "\">" + this.price.toFixed(2) + "</span></p>";
-                html += "</div>"
-                html += "</div>";
-                html += "<br><hr><br>";
-                return html;
+            renderItem() {
+                // This is sooo annoying
+                // how do I reference this objects variables inside these jquery objects?????
+                var itemId = this.id;
+                var name = this.name;
+                var quantity = this.quantity;
+                var itemDiv = $('<div />', {
+                    "class": "item row"
+                }).appendTo(this.div);
+                var leftCol = $('<div />', {
+                    "class": "col-md-4"
+                }).appendTo(itemDiv);
+                var itemImg = $('<img />', {
+                    "class": "itemImage",
+                    "src": this.imgUrl
+                }).appendTo(leftCol);
+                var middleCol = $('<div />', {
+                    "class": "col-md-4"
+                }).appendTo(itemDiv);
+                var itemName = $('<h2 />', {
+                    "css": {
+                        "width": "100%"
+                    },
+                    "class": "itemName",
+                    "text": this.name
+                }).appendTo(middleCol);
+                var itemDetails = $('<em />', {
+                    "css": {
+                        "width": "100%"
+                    },
+                    "class": "itemDetails",
+                    "text": this.details
+                }).appendTo(middleCol);
+                var rightCol = $('<div />', {
+                    "class": "itemControls col-md-4"
+                }).appendTo(itemDiv);
+                var removeButton = $('<button />', {
+                    "class": "btn btn-danger removeItemButton",
+                    "text": "Remove",
+                    "click": function() {
+                        $("#quantity" + itemId).val(0);
+                        updateQuantity(itemId, 0);
+                    }
+                }).appendTo(rightCol);
+                var itemPrice = $('<p />', {
+                    "class": "itemPrice",
+                    "id": "price" + itemId,
+                    "text": this.price.toFixed(2)
+                }).appendTo(rightCol);
+                 var itemQuantity = $('<input />', {
+                    "class": "itemQuantity",
+                    "type": "number",
+                    "placeholder": 0,
+                    "min": 0,
+                    "max": 10,
+                    "id": "quantity" + itemId,
+                    // It's really annoying that I can't just point change at this.updateQuantity
+                    // because this loses meaning inside of updateQuantity and no longer refers back 
+                    // to the original item.
+                    "change": function() {
+                        var currentQuantity = $("#quantity" + itemId).val();
+                        updateQuantity(itemId, currentQuantity);
+                    },
+                    "val": this.quantity
+                }).appendTo(rightCol);
+            }
+
+             /*
+                Update the displayed price for this item to reflect the quantity ordered
+
+                When quantity is 0, the price per unit is displayed, but when a quantity > 0 
+                is selected the price will be the price per unit times the quantity
+            */
+            // NOTE: This isn't used currently, but I would prefer to implement updateQuantity
+            // this way and have the itemQuantity input and remove buttons refer to this,
+            // however the this object loses meaning and no longer refers to this item.
+            updatePrice() {
+                var count = this.quantity > 0 ? this.quantity : 1;
+                $("#price" + this.id).text = (count * this.price).toFixed(2);
             }
 
             /*
@@ -186,20 +279,13 @@
                     count = 0;
                 }
                 this.quantity = count;
-                this.updatePrice();
-            }
-
-            /*
-                Update the displayed price for this item to reflect the quantity ordered
-
-                When quantity is 0, the price per unit is displayed, but when a quantity > 0 
-                is selected the price will be the price per unit times the quantity
-            */
-            updatePrice() {
-                var div = document.getElementById("price" + this.id);
-                var count = this.quantity > 0 ? this.quantity : 1;
-                div.innerHTML = (count * this.price).toFixed(2);
-                document.getElementById("quantity" + this.id).value = this.quantity;
+                var currentPrice = (count * this.price).toFixed(2);
+                // If the quantity was updated to 0 and the currentPrice
+                // evaluates to 0 then set the price to the price of a single item
+                if (currentPrice == 0) {
+                    currentPrice = this.price;
+                }
+                $("#price" + this.id).text(currentPrice);
             }
 
             /*
@@ -246,16 +332,14 @@
         */
         function resetItems() {
             inventory = {};
-            var itemsDiv = document.getElementById("items");
-            itemsDiv.innerHTML = "";
             get('items.json').then(
                 function(response) {
                     var rawItems = response;
                     var items = JSON.parse(rawItems);
                     items.forEach(function(i) {
-                        var item = new Item(i.name, i.price, i.details, i.url);
+                        var item = new Item("#items", i.name, i.price, i.details, i.url);
                         inventory[item.id] = item;
-                        itemsDiv.innerHTML += item.getHTML();
+                        item.renderItem();
                     });
                     updateValues();
                 },
@@ -289,21 +373,22 @@
             subtotal = parseFloat(subtotal.toFixed(2))
 
             var customer = {}
-            customer.name       =  document.getElementById("name-input").value;
-            customer.cc         =  document.getElementById("cc-input").value;
-            customer.cvv        =  document.getElementById("cvv-input").value;
-            customer.expiration =  document.getElementById("exp-input").value;
-            customer.address    =  document.getElementById("address-input").value;
+            customer.name       =  $("#name-input").val();
+            customer.cc         =  $("#cc-input").val();
+            customer.cvv        =  $("#cvv-input").val();
+            customer.expiration =  $("#exp-input").val();
+            customer.address    =  $("#address-input").val();
 
 
-            document.getElementById("order").value = JSON.stringify(order);
-            document.getElementById("customer").value = JSON.stringify(customer);
-            document.getElementById("tax").value = tax
-            document.getElementById("shipping").value = shipping
-            document.getElementById("subtotal").value = subtotal
-            document.getElementById("total").value = total
+            $("#order").val(JSON.stringify(order));
+            $("#customer").val(JSON.stringify(customer));
+            $("#tax").val(tax);
+            $("#shipping").val(shipping);
+            $("#subtotal").val(subtotal);
+            $("#total").val(total);
+
             // How do I add the items to json being submitted?
-            document.getElementById("creditForm").submit();
+            $("#creditForm").submit();
         }
 
         /*
@@ -342,9 +427,9 @@
             var tax = (subtotal * TAX_RATE).toFixed(2);
             var total = (subtotal + (subtotal * TAX_RATE) + SHIPPING_PRICE).toFixed(2);
             // Update the displayed costs
-            document.getElementById("currentSubtotal").innerHTML = subtotal.toFixed(2);
-            document.getElementById("currentTax").innerHTML = tax;
-            document.getElementById("currentTotal").innerHTML = total;
+            $("#currentSubtotal").text(subtotal.toFixed(2));
+            $("#currentTax").text(tax);
+            $("#currentTotal").text(total);
         }
 
         /*

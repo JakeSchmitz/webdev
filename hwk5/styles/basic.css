@@ -45,3 +45,22 @@
 	text-align: left;
 	display: inline-block;
 }
+
+.itemControls {
+	float: right;
+	padding-bottom: 5pt;
+}
+
+.itemPrice {
+	float: right;
+	margin: 0 5pt 0 0;
+}
+
+.itemQuantity {
+	float: right;
+	margin: 0 5pt 0 0;
+}
+
+.removeItemButton {
+	float: right;
+}
