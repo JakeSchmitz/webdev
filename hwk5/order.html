@@ -180,141 +180,140 @@
                 } catch(e) {
                     throw Error("Item must contain name, price, and details.");
                 }
-            }
 
-            /*
-                Render this item in the div assigned in the constructor
 
-                Honestly, this feels worse than the previous html implementation 
-                (see: https://github.com/JakeSchmitz/webdev/blob/master/hwk4/index.html#L37-L52)
-            */
-            renderItem() {
-                // This is sooo annoying
-                // how do I reference this objects variables inside these jquery objects?????
-                var itemId = this.id;
-                var name = this.name;
-                var quantity = this.quantity;
-                var itemDiv = $('<div />', {
-                    "class": "item row"
-                }).appendTo(this.div);
-                var leftCol = $('<div />', {
-                    "class": "col-md-4"
-                }).appendTo(itemDiv);
-                var itemImg = $('<img />', {
-                    "class": "itemImage",
-                    "src": this.imgUrl
-                }).appendTo(leftCol);
-                var middleCol = $('<div />', {
-                    "class": "col-md-4"
-                }).appendTo(itemDiv);
-                var itemName = $('<h2 />', {
-                    "css": {
-                        "width": "100%"
-                    },
-                    "class": "itemName",
-                    "text": this.name
-                }).appendTo(middleCol);
-                var itemDetails = $('<em />', {
-                    "css": {
-                        "width": "100%"
-                    },
-                    "class": "itemDetails",
-                    "text": this.details
-                }).appendTo(middleCol);
-                var rightCol = $('<div />', {
-                    "class": "itemControls col-md-4"
-                }).appendTo(itemDiv);
-                var removeButton = $('<button />', {
-                    "class": "btn btn-danger removeItemButton",
-                    "text": "Remove",
-                    "click": function() {
-                        $("#quantity" + itemId).val(0);
-                        updateQuantity(itemId, 0);
+                /*
+                    Render this item in the div assigned in the constructor
+
+                    Honestly, this feels worse than the previous html implementation 
+                    (see: https://github.com/JakeSchmitz/webdev/blob/master/hwk4/index.html#L37-L52)
+                */
+                this.renderItem = function() {
+                    // This is sooo annoying
+                    // how do I reference this objects variables inside these jquery objects?????
+                    var itemId = this.id;
+                    var name = this.name;
+                    var quantity = this.quantity;
+                    var itemDiv = $('<div />', {
+                        "class": "item row"
+                    }).appendTo(this.div);
+                    var leftCol = $('<div />', {
+                        "class": "col-md-4"
+                    }).appendTo(itemDiv);
+                    var itemImg = $('<img />', {
+                        "class": "itemImage",
+                        "src": this.imgUrl
+                    }).appendTo(leftCol);
+                    var middleCol = $('<div />', {
+                        "class": "col-md-4"
+                    }).appendTo(itemDiv);
+                    var itemName = $('<h2 />', {
+                        "css": {
+                            "width": "100%"
+                        },
+                        "class": "itemName",
+                        "text": this.name
+                    }).appendTo(middleCol);
+                    var itemDetails = $('<em />', {
+                        "css": {
+                            "width": "100%"
+                        },
+                        "class": "itemDetails",
+                        "text": this.details
+                    }).appendTo(middleCol);
+                    var rightCol = $('<div />', {
+                        "class": "itemControls col-md-4"
+                    }).appendTo(itemDiv);
+                    var removeButton = $('<button />', {
+                        "class": "btn btn-danger removeItemButton",
+                        "text": "Remove",
+                        "click": function() {
+                            this.updateQuantity(0);
+                        }
+                    }).appendTo(rightCol);
+                    var itemPrice = $('<p />', {
+                        "class": "itemPrice",
+                        "id": "price" + itemId,
+                        "text": this.price.toFixed(2)
+                    }).appendTo(rightCol);
+                     var itemQuantity = $('<input />', {
+                        "class": "itemQuantity",
+                        "type": "number",
+                        "placeholder": 0,
+                        "min": 0,
+                        "max": 10,
+                        "id": "quantity" + itemId,
+                        // It's really annoying that I can't just point change at this.updateQuantity
+                        // because this loses meaning inside of updateQuantity and no longer refers back 
+                        // to the original item.
+                        "change": function() {
+                            var currentQuantity = $("#quantity" + itemId).val();
+                            updateQuantity(itemId, currentQuantity);
+                        },
+                        "val": this.quantity
+                    }).appendTo(rightCol);
+                }
+
+                 /*
+                    Update the displayed price for this item to reflect the quantity ordered
+
+                    When quantity is 0, the price per unit is displayed, but when a quantity > 0 
+                    is selected the price will be the price per unit times the quantity
+                */
+                this.updatePrice = function() {
+                    var count = this.quantity > 0 ? this.quantity : 1;
+                    $("#price" + this.id).text = (count * this.price).toFixed(2);
+                }
+
+                /*
+                    Update this items quantity to a non-negative number
+
+                    When the quantity is updated update the displayed price for this line item
+                */
+                this.updateQuantity = function(count) {
+                    if (count < 0) {
+                        count = 0;
                     }
-                }).appendTo(rightCol);
-                var itemPrice = $('<p />', {
-                    "class": "itemPrice",
-                    "id": "price" + itemId,
-                    "text": this.price.toFixed(2)
-                }).appendTo(rightCol);
-                 var itemQuantity = $('<input />', {
-                    "class": "itemQuantity",
-                    "type": "number",
-                    "placeholder": 0,
-                    "min": 0,
-                    "max": 10,
-                    "id": "quantity" + itemId,
-                    // It's really annoying that I can't just point change at this.updateQuantity
-                    // because this loses meaning inside of updateQuantity and no longer refers back 
-                    // to the original item.
-                    "change": function() {
-                        var currentQuantity = $("#quantity" + itemId).val();
-                        updateQuantity(itemId, currentQuantity);
-                    },
-                    "val": this.quantity
-                }).appendTo(rightCol);
-            }
-
-             /*
-                Update the displayed price for this item to reflect the quantity ordered
-
-                When quantity is 0, the price per unit is displayed, but when a quantity > 0 
-                is selected the price will be the price per unit times the quantity
-            */
-            // NOTE: This isn't used currently, but I would prefer to implement updateQuantity
-            // this way and have the itemQuantity input and remove buttons refer to this,
-            // however the this object loses meaning and no longer refers to this item.
-            updatePrice() {
-                var count = this.quantity > 0 ? this.quantity : 1;
-                $("#price" + this.id).text = (count * this.price).toFixed(2);
-            }
-
-            /*
-                Update this items quantity to a non-negative number
-
-                When the quantity is updated update the displayed price for this line item
-            */
-            updateQuantity(count) {
-                if (count < 0) {
-                    count = 0;
+                    this.quantity = count;
+                    var currentPrice = (count * this.price).toFixed(2);
+                    // If the quantity was updated to 0 and the currentPrice
+                    // evaluates to 0 then set the price to the price of a single item
+                    if (currentPrice == 0) {
+                        currentPrice = this.price;
+                    }
+                    $("#quantity" + this.id).val(count);
+                    $("#price" + this.id).text(currentPrice);
+                    updateValues();
                 }
-                this.quantity = count;
-                var currentPrice = (count * this.price).toFixed(2);
-                // If the quantity was updated to 0 and the currentPrice
-                // evaluates to 0 then set the price to the price of a single item
-                if (currentPrice == 0) {
-                    currentPrice = this.price;
+
+                /*
+                    Get the subtotal cost associated with this item, which is equal to the price
+                    times the quantity ordered
+                */
+                this.getPrice = function() {
+                    var cost = this.quantity * this.price;
+                    return cost;
                 }
-                $("#price" + this.id).text(currentPrice);
-            }
 
-            /*
-                Get the subtotal cost associated with this item, which is equal to the price
-                times the quantity ordered
-            */
-            getPrice() {
-                var cost = this.quantity * this.price;
-                return cost;
-            }
-
-            /*
-                Generate order info from an item. This will include a cost, but will not
-                include the item details.
-            */
-            getOrderInfo() {
-                return {
-                    "name": this.name,
-                    "quantity": this.quantity,
-                    "price": this.price,
-                    "cost": this.price * this.quantity
+                /*
+                    Generate order info from an item. This will include a cost, but will not
+                    include the item details.
+                */
+                this.getOrderInfo = function() {
+                    return {
+                        "name": this.name,
+                        "quantity": this.quantity,
+                        "price": this.price,
+                        "cost": this.price * this.quantity
+                    }
                 }
-            }
 
-            /*
-                Simple getter for name
-            */
-            getName() {
-                return this.name;
+                /*
+                    Simple getter for name
+                */
+                this.getName = function() {
+                    return this.name;
+                }
             }
         }
 
@@ -322,7 +321,7 @@
             When the window loads initialize the inventory via resetItems
         */
         window.onload = function() {
-            resetItems()
+            fetchItems();
         }
 
         /*
@@ -331,9 +330,17 @@
             div.
         */
         function resetItems() {
+            for (i in inventory) {
+                var item = inventory[i];
+                item.updateQuantity(0);
+            }
+        }
+
+        function fetchItems() {
             inventory = {};
             get('items.json').then(
                 function(response) {
+                    $("#items").val("");
                     var rawItems = response;
                     var items = JSON.parse(rawItems);
                     items.forEach(function(i) {
@@ -358,6 +365,7 @@
         function submitItems() {
             var order = [];
             var subtotal = 0;
+
             for (key in inventory) {
                 var item = inventory[key];
                 var price = item.getPrice();
@@ -366,19 +374,20 @@
                     subtotal += price;
                 }
             }
-            var tax = parseFloat((TAX_RATE * subtotal).toFixed(2));
+
+            var tax      = parseFloat((TAX_RATE * subtotal).toFixed(2));
             var shipping = parseFloat(SHIPPING_PRICE.toFixed(2));
-            var total = subtotal + (TAX_RATE * subtotal) + SHIPPING_PRICE;
-            total = parseFloat(total.toFixed(2))
-            subtotal = parseFloat(subtotal.toFixed(2))
+            var total    = subtotal + (TAX_RATE * subtotal) + SHIPPING_PRICE;
+            total        = parseFloat(total.toFixed(2))
+            subtotal     = parseFloat(subtotal.toFixed(2))
 
-            var customer = {}
-            customer.name       =  $("#name-input").val();
-            customer.cc         =  $("#cc-input").val();
-            customer.cvv        =  $("#cvv-input").val();
-            customer.expiration =  $("#exp-input").val();
-            customer.address    =  $("#address-input").val();
-
+            var customer = {
+                name       : $("#name-input").val(),
+                cc         : $("#cc-input").val(),
+                cvv        : $("#cvv-input").val(),
+                expiration : $("#exp-input").val(),
+                address    : $("#address-input").val()
+            }
 
             $("#order").val(JSON.stringify(order));
             $("#customer").val(JSON.stringify(customer));
@@ -386,8 +395,7 @@
             $("#shipping").val(shipping);
             $("#subtotal").val(subtotal);
             $("#total").val(total);
-
-            // How do I add the items to json being submitted?
+            // submit form
             $("#creditForm").submit();
         }
 
